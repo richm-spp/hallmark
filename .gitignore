@@ -18,8 +18,8 @@ yarn-error.log*
 .pnpm-debug.log*
 
 # Build / temp
-dist/
-build/
+/dist/
+/build/
 .cache/
 *.log
 .vercel
