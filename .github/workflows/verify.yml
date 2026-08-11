@@ -26,6 +26,11 @@ jobs:
       - name: counts
         run: node tools/verify/counts.mjs
 
+      # The shipped per-theme token files are generated from site/css/tokens.css.
+      # Editing either side without regenerating is silent palette drift.
+      - name: theme tokens in sync
+        run: node tools/build/extract-theme-tokens.mjs --check
+
       # The mechanically checkable slop-test gates, run over the committed
       # examples. Hard gates fail the build; advisories report.
       #
