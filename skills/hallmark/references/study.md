@@ -507,3 +507,36 @@ Same post-emission behaviour as the default verb's lock-the-system flow (per [`d
 - If the user only wanted the diagnosis and is satisfied: stop. The diagnosis report is a complete deliverable on its own.
 
 Do not chain verbs or emit files without the user's explicit go-ahead. The diagnosis is the contract; the build and the file are separate decisions.
+
+---
+
+## Output contract for `study` builds (moved from SKILL.md)
+
+When `study` produces code, the macrostructure stamp must include a `studied: yes` flag, the theme picked, and the source mode. Image mode example:
+
+```css
+/* Hallmark · macrostructure: Marquee Hero · H1 hero knobs: size=xxl, alignment=left-bias
+ * theme: Studio · accent: forest-green ~3% · studied: yes · DNA-source: image (user reference)
+ */
+```
+
+URL mode example — additionally records the URL and any exact-fonts / exact-colours that informed the build:
+
+```css
+/* Hallmark · macrostructure: Marquee Hero · H1 hero knobs: size=xxl, alignment=left-bias
+ * theme: Studio · accent: forest-green ~3% · studied: yes · DNA-source: url
+ * source-url: https://example.com/  ·  observed-fonts: Inter Tight + Inter
+ * observed-accent: oklch(58% 0.16 35)  ·  rhythm: unknown (URL mode)
+ */
+```
+
+The stamp signals to future Hallmark runs that this page's structure was extracted, not invented. That matters for the audit verb: a `studied: yes` page is audited *more* leniently for "Specimen fall-through" (the user explicitly chose this DNA) but *more* strictly for "did you actually use the extracted DNA, or did you drift back to defaults?"
+
+## Limits to spell out to the user
+
+When you return the diagnosis, name the limits explicitly:
+
+- **Fonts:** in image mode, the skill names a *role* and proposes one or two real candidates from the canon — visual font ID is unreliable. In URL mode, the skill names the *exact* fonts the page loads (via `@font-face`, Google Fonts, `next/font`). The role still drives the rebuild — Hallmark may pick a different specific face for the user's content.
+- **Imagery:** the skill never copies the source's photography. It generates structurally-equivalent placeholders or asks for the user's own assets.
+- **Theme drift is allowed.** If the source is a Specimen and the user's content is a SaaS landing page, the skill picks a different theme. The DNA is the macrostructure + archetype + colour-anchor + type-pairing — not the dress.
+- **Rhythm is the URL-mode blind spot.** HTML alone can't tell you whether the visual rhythm reads generous or templated. URL-mode diagnoses always state this and offer a screenshot fallback if it matters.
