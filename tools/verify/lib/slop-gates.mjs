@@ -13,7 +13,7 @@
  *               how a linter becomes decorative, so the runner prints the total.
  */
 
-import { oklchChroma } from './css.mjs';
+import { oklchChroma, contrastRatio } from './css.mjs';
 
 // Kept close to gate 38a's own enumeration: h1–h6, *__title, hero display,
 // wordmark, footer statement. Deliberately NOT "anything masthead-ish" — a
@@ -306,6 +306,54 @@ export const GATES = [
     },
   },
 ];
+
+// ── Brand gates — fire only when a brand is active on the page ──────────────
+GATES.push({
+  id: 'B1',
+  tier: 'hard',
+  name: 'brand accent fails contrast on the active paper',
+  why: 'a brand accent that cannot reach 4.5:1 (text) / 3:1 (UI) on the paper ships an invisible failure on every page',
+  // Active brand = a --brand token among the resolved custom properties.
+  check({ rules, customProps }) {
+    if (!customProps.has('--brand')) return [];
+    const paper = customProps.get('--color-paper');
+    if (!paper) return [];
+    const found = [];
+
+    const pairs = [
+      ['--color-accent-ink', 4.5, 'accent-as-text needs 4.5:1'],
+      ['--color-accent', 3.0, 'accent as UI edge / large text needs 3:1'],
+      ['--color-focus', 3.0, 'focus ring needs 3:1 (WCAG 1.4.11)'],
+    ];
+    for (const [token, floor, label] of pairs) {
+      const value = customProps.get(token);
+      if (!value) continue;
+      const ratio = contrastRatio(value, paper);
+      if (ratio === null) continue; // un-parseable (var chains, gradients) — other gates own token hygiene
+      if (ratio < floor) {
+        found.push({ line: null, detail: `${token}: ${value} on --color-paper: ${paper} = ${ratio.toFixed(2)}:1 — ${label}` });
+      }
+    }
+
+    // Decorative-only brand tokens must never carry text: any color/background
+    // declaration whose value resolves to --brand-plus is a violation.
+    const plus = customProps.get('--brand-plus');
+    if (plus) {
+      for (const rule of rules) {
+        for (const d of rule.decls) {
+          if (d.prop.startsWith('--')) continue;
+          const usesPlus = /var\(\s*--brand-plus\s*[),]/.test(d.value) || (plus && d.value.includes(plus));
+          if (!usesPlus) continue;
+          const isWordmark = rule.selectors.some((s) => /wordmark|logo|brand-plus|__plus/i.test(s));
+          if (/^color$/.test(d.prop) && !isWordmark) {
+            found.push({ line: d.line, detail: `${rule.selectors[0]} { color: ${d.value} } — --brand-plus is the wordmark glyph only` });
+          }
+        }
+      }
+    }
+    return found;
+  },
+});
 
 export const HARD = GATES.filter((g) => g.tier === 'hard').map((g) => g.id);
 export const ADVISORY = GATES.filter((g) => g.tier === 'advisory').map((g) => g.id);

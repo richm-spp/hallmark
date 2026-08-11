@@ -112,6 +112,8 @@ By the time you reach this step, one of four things is true:
 
 **Custom is a quiet branch, not a default question.** Most briefs route to catalog and the user never sees the words "catalog" or "custom". A custom theme is a **complete** palette + pairing bound by every rule in [`color.md`](references/color.md), [`typography.md`](references/typography.md), and [`anti-patterns.md`](references/anti-patterns.md); the 58 gates fire unchanged. The diversification rule is theme-route-blind; custom entries record their axes in `.hallmark/log.json`.
 
+**Brand-lock clause.** When pre-flight signal 6 found an active brand (a `brand.css`, `--brand-*` tokens, or `brand:` in `design.md` — see [`references/brands/README.md`](references/brands/README.md)), it composes with whichever route fired above: the theme (or custom construction, or studied DNA) still owns macrostructure, paper band, display style, spacing, and motion — but **the accent tokens come from the brand file**, verbatim (`--color-accent`, `--color-accent-ink`, `--color-accent-deep`, `--color-accent-wash`, `--color-focus`). On a dark-paper theme (`--color-paper` L < 30 %), use the brand file's `[data-paper="dark"]` block. Diversification then runs on the two remaining axes only — paper band and display style — since the accent hue is fixed by design, and the accent-hue axis is recorded as `brand:<name>` in `.hallmark/log.json`. Brand colours the file marks as decorative-only (e.g. a wordmark glyph token) never carry text, buttons, or status — the brand-contrast gate (B1) fails the build if they do. The Step 6 stamp records `brand: <name>` alongside the theme.
+
 ### 3. Load the visual ruleset
 
 **Be precise about what to load when — over-eager loading is the largest avoidable cost of running Hallmark.**
@@ -120,6 +122,7 @@ By the time you reach this step, one of four things is true:
 - The genre file picked in Step 1 — [`genres/editorial.md`](references/genres/editorial.md), [`genres/modern-minimal.md`](references/genres/modern-minimal.md), [`genres/atmospheric.md`](references/genres/atmospheric.md), or [`genres/playful.md`](references/genres/playful.md).
 - **The token file for the catalog theme picked in Step 2.6** — `references/themes/tokens/<theme>.css` (~2 KB). The canonical values. Studied-DNA and custom routes skip this load.
 - **If `references/themes/<theme>.md` exists** for the picked theme, load it eagerly (opt-in per-theme spec; silent no-op when absent).
+- **The active brand file, when pre-flight signal 6 fired** — the project's `brand.css` or `references/brands/<name>.css` (~1 KB). Its accent tokens override the theme's per the brand-lock clause.
 
 **On-route (each loads at its own step, never earlier):**
 - [`preflight.md`](references/preflight.md) — Step 0, when the project has code.

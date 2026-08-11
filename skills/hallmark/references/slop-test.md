@@ -190,3 +190,9 @@ The CSS stamp at Step 6 records mobile pass alongside contrast: `· mobile: pass
 ---
 
 If any answer is **yes**, fix it. Do not ship slop.
+
+## Brand gates
+
+(Fire only when a brand is active — pre-flight signal 6 / SKILL.md § 2.6 brand-lock. Mechanically enforced by `tools/verify/gates.mjs`.)
+
+B1. **Brand accent vs paper contrast.** With a brand locked, does `--color-accent-ink` reach **4.5:1** against `--color-paper`, and do `--color-accent` and `--color-focus` reach **3:1** (WCAG 1.4.11)? On dark-paper themes, are the brand file's `[data-paper="dark"]` values in use rather than the light-paper ones? And does any token the brand file marks decorative-only (e.g. `--brand-plus`, wordmark glyph) appear in a `color:` declaration outside the wordmark? Any yes → fail. Compute the ratios — do not eyeball them.

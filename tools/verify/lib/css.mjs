@@ -138,3 +138,47 @@ export function oklchChroma(value) {
   const m = value.match(/oklch\(\s*([\d.]+%?)\s+([\d.]+)\s+([\d.]+)/i);
   return m ? Number(m[2]) : null;
 }
+
+/**
+ * WCAG 2.x relative luminance for a #hex or oklch() colour, or null when the
+ * value isn't a parseable single colour. OKLCH goes through OKLab → linear
+ * sRGB (Björn Ottosson's matrices); hex through the sRGB transfer function.
+ */
+export function relativeLuminance(value) {
+  const v = String(value).trim();
+
+  const hex = v.match(/^#([0-9a-f]{6})$/i)?.[1];
+  if (hex) {
+    const lin = (c) => (c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+    const [r, g, b] = hex.match(/../g).map((x) => lin(parseInt(x, 16) / 255));
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+  }
+
+  const ok = v.match(/^oklch\(\s*([\d.]+)(%?)\s+([\d.]+)\s+([\d.]+)(?:deg)?\s*\)$/i);
+  if (ok) {
+    const L = Number(ok[1]) / (ok[2] ? 100 : 1);
+    const C = Number(ok[3]);
+    const H = (Number(ok[4]) * Math.PI) / 180;
+    const a = C * Math.cos(H);
+    const b = C * Math.sin(H);
+    const l = (L + 0.3963377774 * a + 0.2158037573 * b) ** 3;
+    const m = (L - 0.1055613458 * a - 0.0638541728 * b) ** 3;
+    const s = (L - 0.0894841775 * a - 1.291485548 * b) ** 3;
+    const clamp = (x) => Math.min(1, Math.max(0, x));
+    const r = clamp(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s);
+    const g = clamp(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s);
+    const bb = clamp(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s);
+    return 0.2126 * r + 0.7152 * g + 0.0722 * bb;
+  }
+
+  return null;
+}
+
+/** WCAG contrast ratio between two colours, or null if either doesn't parse. */
+export function contrastRatio(a, b) {
+  const la = relativeLuminance(a);
+  const lb = relativeLuminance(b);
+  if (la === null || lb === null) return null;
+  const [hi, lo] = la > lb ? [la, lb] : [lb, la];
+  return (hi + 0.05) / (lo + 0.05);
+}

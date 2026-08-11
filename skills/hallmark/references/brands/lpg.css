@@ -1,0 +1,36 @@
+/*
+  Hallmark brand tokens — lpg (LeasePLUS Group)
+  Source: Safecode Brain DESIGN-004 (+Platform design system), status DRAFT —
+  values verified against the standard 2026-08-12. If DESIGN-004 moves, this
+  file moves with it; do not tune values here.
+
+  Contract (binding, see brands/README.md):
+  · The brand owns the ACCENT ONLY. Paper band, display style, macrostructure,
+    and every slop-test gate stay with the theme.
+  · --brand-plus is the wordmark "+" glyph ONLY — never a button, never a
+    status, never text. DESIGN-004: hue 23 collides with "expiring" in status
+    ramps, and #F37021 is 2.94:1 on white (fails AA text and the 3:1 UI floor).
+  · No status token may use hue 190–230 (reserved for the brand blue).
+*/
+
+/* Light / mid paper band (theme --color-paper L ≥ 30%) */
+:root {
+  --brand:              lpg;
+  --color-accent:       #005B99;  /* --primary · 7.10:1 on white (AAA) */
+  --color-accent-ink:   #005B99;  /* accent-as-text is safe at this value */
+  --color-accent-deep:  #004777;  /* hover / pressed */
+  --color-accent-wash:  #DFEDF7;  /* active-nav fill, selected chips */
+  --color-focus:        #005B99;
+  --brand-plus:         #F37021;  /* wordmark "+" ONLY */
+}
+
+/* Dark paper band (theme --color-paper L < 30% — Midnight, Terminal, …).
+   #005B99 is too dark on a dark ground; DESIGN-004 lifts lightness, holds hue. */
+[data-paper="dark"] {
+  --color-accent:       #4FA6DE;
+  --color-accent-ink:   #4FA6DE;
+  --color-accent-deep:  #6FBCEC;
+  --color-accent-wash:  #10293C;
+  --color-focus:        #4FA6DE;
+  --brand-plus:         #F58B45;
+}
