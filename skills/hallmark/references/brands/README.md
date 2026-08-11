@@ -24,9 +24,14 @@ One file, token block only, no prose beyond the header comment:
 `references/brands/<name>.css` (vendored into a project as `brand.css`).
 
 Required tokens: `--brand`, `--color-accent`, `--color-accent-ink`,
-`--color-accent-deep`, `--color-accent-wash`, `--color-focus`. Provide a
-`[data-paper="dark"]` block whenever the brand will meet dark-paper themes —
-most corporate accents need a lightness lift there (hold the hue).
+`--color-on-accent`, `--color-accent-deep`, `--color-accent-wash`,
+`--color-focus`. Two of these are commonly confused and must not be:
+`--color-accent-ink` is the accent used **as text on the paper** (≥ 4.5:1 vs
+`--color-paper`); `--color-on-accent` is the text colour **on an accent fill**
+(≥ 4.5:1 vs `--color-accent`). Setting them equal ships invisible button
+labels — gate B1 measures both pairings. Provide a `[data-paper="dark"]`
+block whenever the brand will meet dark-paper themes — most corporate accents
+need a lightness lift there (hold the hue).
 
 ## Preconditions — not advice
 

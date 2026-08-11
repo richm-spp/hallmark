@@ -321,17 +321,21 @@ GATES.push({
     const found = [];
 
     const pairs = [
-      ['--color-accent-ink', 4.5, 'accent-as-text needs 4.5:1'],
-      ['--color-accent', 3.0, 'accent as UI edge / large text needs 3:1'],
-      ['--color-focus', 3.0, 'focus ring needs 3:1 (WCAG 1.4.11)'],
+      // token · compared against · floor · meaning
+      ['--color-accent-ink', paper, 4.5, 'accent-as-text on paper needs 4.5:1'],
+      ['--color-accent', paper, 3.0, 'accent as UI edge / large text needs 3:1'],
+      ['--color-focus', paper, 3.0, 'focus ring needs 3:1 (WCAG 1.4.11)'],
+      // The on-fill token is measured against the ACCENT, not the paper — the
+      // invisible-button bug is accent-coloured text on an accent fill.
+      ['--color-on-accent', customProps.get('--color-accent'), 4.5, 'text on an accent fill needs 4.5:1 against the accent'],
     ];
-    for (const [token, floor, label] of pairs) {
+    for (const [token, against, floor, label] of pairs) {
       const value = customProps.get(token);
-      if (!value) continue;
-      const ratio = contrastRatio(value, paper);
+      if (!value || !against) continue;
+      const ratio = contrastRatio(value, against);
       if (ratio === null) continue; // un-parseable (var chains, gradients) — other gates own token hygiene
       if (ratio < floor) {
-        found.push({ line: null, detail: `${token}: ${value} on --color-paper: ${paper} = ${ratio.toFixed(2)}:1 — ${label}` });
+        found.push({ line: null, detail: `${token}: ${value} vs ${against} = ${ratio.toFixed(2)}:1 — ${label}` });
       }
     }
 

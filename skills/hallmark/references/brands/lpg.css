@@ -13,11 +13,15 @@
   · No status token may use hue 190–230 (reserved for the brand blue).
 */
 
-/* Light / mid paper band (theme --color-paper L ≥ 30%) */
+/* Light / mid paper band (theme --color-paper L ≥ 30%)
+   Token semantics (matches the de-facto convention of every theme token file):
+   --color-accent-ink = the accent used AS text on the paper (≥ 4.5:1 vs paper);
+   --color-on-accent  = text ON an accent-filled surface (≥ 4.5:1 vs accent). */
 :root {
   --brand:              lpg;
   --color-accent:       #005B99;  /* --primary · 7.10:1 on white (AAA) */
   --color-accent-ink:   #005B99;  /* accent-as-text is safe at this value */
+  --color-on-accent:    #FFFFFF;  /* text on a #005B99 fill · 7.10:1 */
   --color-accent-deep:  #004777;  /* hover / pressed */
   --color-accent-wash:  #DFEDF7;  /* active-nav fill, selected chips */
   --color-focus:        #005B99;
@@ -29,6 +33,7 @@
 [data-paper="dark"] {
   --color-accent:       #4FA6DE;
   --color-accent-ink:   #4FA6DE;
+  --color-on-accent:    #0B141C;  /* dark ink on a lifted-blue fill · 6.93:1 (white fails at 2.68:1) */
   --color-accent-deep:  #6FBCEC;
   --color-accent-wash:  #10293C;
   --color-focus:        #4FA6DE;
